@@ -1,0 +1,30 @@
+diff --git a/Makefile b/Makefile
+index 4f8ee35..14f7078 100644
+--- a/Makefile
++++ b/Makefile
+@@ -31,6 +31,7 @@ ifeq (NetBSD,$(OS))
+ # add explicit _NETBSD_SOURCE, see https://github.com/linux-sunxi/sunxi-tools/pull/22
+ DEFINES += -D_NETBSD_SOURCE
+ endif
++DEFINES += -D__BSD_VISIBLE -D__XSI_VISIBLE
+ 
+ # Tools useful on host and target
+ TOOLS = sunxi-fexc sunxi-bootinfo sunxi-fel sunxi-nand-part
+diff --git a/include/portable_endian.h b/include/portable_endian.h
+index 2b43378..f6b70f0 100644
+--- a/include/portable_endian.h
++++ b/include/portable_endian.h
+@@ -41,11 +41,11 @@
+ #	define __LITTLE_ENDIAN LITTLE_ENDIAN
+ #	define __PDP_ENDIAN    PDP_ENDIAN
+ 
+-#elif defined(__OpenBSD__)
++#elif defined(__OpenBSD__) || defined(__FreeBSD__)
+ 
+ #	include <sys/endian.h>
+ 
+-#elif defined(__NetBSD__) || defined(__FreeBSD__) || defined(__DragonFly__)
++#elif defined(__NetBSD__) || defined(__DragonFly__)
+ 
+ #	include <sys/endian.h>
+ 

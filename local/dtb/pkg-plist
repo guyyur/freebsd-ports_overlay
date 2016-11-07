@@ -1,0 +1,6 @@
+%%DATADIR%%/arm/am335x-boneblack.dtb
+%%DATADIR%%/arm/bcm2835-rpi-b.dtb
+%%DATADIR%%/arm/meson8b-odroidc1.dtb
+%%DATADIR%%/arm/sun4i-a10-cubieboard.dtb
+%%DATADIR%%/arm/sun8i-h3-orangepi-one.dtb
+%%DATADIR%%/arm/sun8i-h3-orangepi-pc.dtb
