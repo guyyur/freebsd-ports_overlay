@@ -1,6 +1,17 @@
 --- a/arch/arm/boot/dts/sun8i-h3.dtsi
 +++ b/arch/arm/boot/dts/sun8i-h3.dtsi
-@@ -308,6 +308,7 @@
+@@ -50,6 +50,10 @@
+ / {
+ 	interrupt-parent = <&gic>;
+ 
++	aliases {
++		ethernet0 = &emac;
++	};
++
+ 	cpus {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+@@ -125,6 +129,7 @@
  			clock-output-names = "apb0_pio", "apb0_ir";
  		};
  
@@ -8,7 +19,7 @@
  		ir_clk: ir_clk@01f01454 {
  			compatible = "allwinner,sun4i-a10-mod0-clk";
  			reg = <0x01f01454 0x4>;
-@@ -315,6 +316,7 @@
+@@ -132,6 +137,7 @@
  			clocks = <&osc32k>, <&osc24M>;
  			clock-output-names = "ir";
  		};
@@ -16,7 +27,19 @@
  	};
  
  	soc {
-@@ -513,7 +515,8 @@
+@@ -140,6 +146,11 @@
+ 		#size-cells = <1>;
+ 		ranges;
+ 
++		syscon: syscon@01c00000 {
++			compatible = "allwinner,sun8i-h3-syscon"; /* ,"syscon" don't add as it will match ti_scm */
++			reg = <0x01c00000 0x34>;
++		};
++
+ 		dma: dma-controller@01c02000 {
+ 			compatible = "allwinner,sun8i-h3-dma";
+ 			reg = <0x01c02000 0x1000>;
+@@ -354,7 +365,8 @@
  						 "PF4", "PF5";
  				allwinner,function = "mmc0";
  				allwinner,drive = <SUN4I_PINCTRL_30_MA>;
@@ -26,8 +49,8 @@
  			};
  
  			mmc0_cd_pin: mmc0_cd_pin@0 {
-@@ -626,6 +629,20 @@
- 			status = "disabled";
+@@ -577,6 +589,20 @@
+ 			#size-cells = <0>;
  		};
  
 +		emac: ethernet@1c30000 {
@@ -35,9 +58,9 @@
 +			reg = <0x01c30000 0x104>, <0x01c00030 0x4>;
 +			reg-names = "emac", "syscon";
 +			interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
-+			resets = <&ahb_rst 17>, <&ahb_rst 66>;
++			resets = <&ccu RST_BUS_EMAC>, <&ccu RST_BUS_EPHY>;
 +			reset-names = "ahb", "ephy";
-+			clocks = <&bus_gates 17>, <&bus_gates 128>;
++			clocks = <&ccu CLK_BUS_EMAC>, <&ccu CLK_BUS_EPHY>;
 +			clock-names = "ahb", "ephy";
 +			#address-cells = <1>;
 +			#size-cells = <0>;
@@ -47,7 +70,7 @@
  		gic: interrupt-controller@01c81000 {
  			compatible = "arm,cortex-a7-gic", "arm,cortex-a15-gic";
  			reg = <0x01c81000 0x1000>,
-@@ -650,6 +667,7 @@
+@@ -601,6 +627,7 @@
  			#reset-cells = <1>;
  		};
  
@@ -55,7 +78,7 @@
  		ir: ir@01f02000 {
  			compatible = "allwinner,sun5i-a13-ir";
  			clocks = <&apb0_gates 1>, <&ir_clk>;
-@@ -659,6 +677,7 @@
+@@ -610,6 +637,7 @@
  			reg = <0x01f02000 0x40>;
  			status = "disabled";
  		};

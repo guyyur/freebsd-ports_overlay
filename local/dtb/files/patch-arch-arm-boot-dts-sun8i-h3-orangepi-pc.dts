@@ -14,7 +14,7 @@
  
  &mmc0 {
  	pinctrl-names = "default";
-@@ -165,3 +167,14 @@
+@@ -183,3 +185,14 @@
  	/* USB VBUS is always on */
  	status = "okay";
  };

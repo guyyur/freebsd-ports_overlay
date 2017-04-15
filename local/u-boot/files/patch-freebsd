@@ -1,0 +1,197 @@
+diff -uNdrp api/api_storage.c api/api_storage.c
+--- api/api_storage.c	2017-01-09 18:57:05.000000000 +0200
++++ api/api_storage.c	2017-02-04 19:40:59.367674000 +0200
+@@ -54,6 +54,9 @@ void dev_stor_init(void)
+ 	specs[ENUM_IDE].name = "ide";
+ #endif
+ #if defined(CONFIG_CMD_MMC)
++#ifndef CONFIG_SYS_MMC_MAX_DEVICE
++#define CONFIG_SYS_MMC_MAX_DEVICE 1
++#endif
+ 	specs[ENUM_MMC].max_dev = CONFIG_SYS_MMC_MAX_DEVICE;
+ 	specs[ENUM_MMC].enum_started = 0;
+ 	specs[ENUM_MMC].enum_ended = 0;
+diff -uNdrp api/api.c api/api.c
+--- api/api.c	2017-01-09 18:57:05.000000000 +0200
++++ api/api.c	2017-02-04 19:40:59.367907000 +0200
+@@ -290,6 +290,11 @@ static int API_dev_close(va_list ap)
+ 	if (!err)
+ 		di->state = DEV_STA_CLOSED;
+ 
++#ifdef CONFIG_FREEBSD
++	flush_dcache_all();
++	invalidate_icache_all();
++#endif
++
+ 	return err;
+ }
+ 
+diff -uNdrp common/Kconfig common/Kconfig
+--- common/Kconfig	2017-01-09 18:57:05.000000000 +0200
++++ common/Kconfig	2017-02-04 19:40:59.368647000 +0200
+@@ -389,4 +389,13 @@ config DISPLAY_BOARDINFO
+ 	  when U-Boot starts up. The board function checkboard() is called
+ 	  to do this.
+ 
++config FREEBSD
++	bool "Enable FreeBSD boot"
++	select API
++	select CMD_CACHE
++	default y
++	help
++	  This option adds boot configuration that can run the FreeBSD
++	  loader.
++
+ source "common/spl/Kconfig"
+diff -uNdrp include/config_distro_bootcmd.h include/config_distro_bootcmd.h
+--- include/config_distro_bootcmd.h	2017-01-09 18:57:05.000000000 +0200
++++ include/config_distro_bootcmd.h	2017-02-04 19:58:05.239017000 +0200
+@@ -153,6 +153,45 @@
+ #define SCAN_DEV_FOR_EFI
+ #endif
+ 
++#ifndef NO_LOAD_FDT
++#define LOAD_FDT_FREEBSD \
++		"load ${devtype} ${devnum}:${distro_bootpart} "           \
++			"${fdt_addr_r} ${fdtfile} && "
++#else
++#define LOAD_FDT_FREEBSD
++#endif
++
++#ifdef CONFIG_FREEBSD
++#define BOOTENV_SHARED_FREEBSD                                            \
++	"boot_freebsd_binary="                                            \
++		LOAD_FDT_FREEBSD                                          \
++		"load ${devtype} ${devnum}:${distro_bootpart} "           \
++			"${kernel_addr_r} ubldr.bin && "                  \
++		"go ${kernel_addr_r}\0"                                   \
++	\
++	"boot_freebsd_elf="                                               \
++		"load ${devtype} ${devnum}:${distro_bootpart} "           \
++			"${kernel_addr_r} ubldr && "                      \
++		"bootelf ${kernel_addr_r}\0"                              \
++	\
++	"scan_dev_for_freebsd="                                           \
++		"if test -e ${devtype} ${devnum}:${distro_bootpart} "     \
++					"ubldr.bin; then "                \
++				"echo Found FreeBSD U-Boot Loader (bin);" \
++				"run boot_freebsd_binary; "               \
++				"echo FREEBSD FAILED: continuing...; "    \
++		"elif test -e ${devtype} ${devnum}:${distro_bootpart} "   \
++					"ubldr; then "                    \
++				"echo Found FreeBSD U-Boot Loader (elf);" \
++				"run boot_freebsd_elf; "                  \
++				"echo FREEBSD FAILED: continuing...; "    \
++		"fi;\0"
++#define SCAN_DEV_FOR_FREEBSD "run scan_dev_for_freebsd;"
++#else
++#define BOOTENV_SHARED_FREEBSD
++#define SCAN_DEV_FOR_FREEBSD
++#endif
++
+ #ifdef CONFIG_CMD_SATA
+ #define BOOTENV_SHARED_SATA	BOOTENV_SHARED_BLKDEV(sata)
+ #define BOOTENV_DEV_SATA	BOOTENV_DEV_BLKDEV
+@@ -326,6 +365,7 @@
+ 	BOOTENV_SHARED_IDE \
+ 	BOOTENV_SHARED_UBIFS \
+ 	BOOTENV_SHARED_EFI \
++	BOOTENV_SHARED_FREEBSD \
+ 	"boot_prefixes=/ /boot/\0" \
+ 	"boot_scripts=boot.scr.uimg boot.scr\0" \
+ 	"boot_script_dhcp=boot.scr.uimg\0" \
+@@ -369,6 +409,7 @@
+ 			"run scan_dev_for_scripts; "                      \
+ 		"done;"                                                   \
+ 		SCAN_DEV_FOR_EFI                                          \
++		SCAN_DEV_FOR_FREEBSD                                      \
+ 		"\0"                                                      \
+ 	\
+ 	"scan_dev_for_boot_part="                                         \
+diff -uNdrp scripts/kconfig/merge_config.sh scripts/kconfig/merge_config.sh
+--- scripts/kconfig/merge_config.sh	2017-01-09 18:57:05.000000000 +0200
++++ scripts/kconfig/merge_config.sh	2017-02-04 19:40:59.370633000 +0200
+@@ -63,7 +63,7 @@ while true; do
+ 		;;
+ 	"-O")
+ 		if [ -d $2 ];then
+-			OUTPUT=$(echo $2 | sed 's/\/*$//')
++			OUTPUT=$(echo $2 | gsed 's/\/*$//')
+ 		else
+ 			echo "output directory $2 does not exist" 1>&2
+ 			exit 1
+@@ -100,7 +100,7 @@ cat $INITFILE > $TMP_FILE
+ 		echo "The merge file '$MERGE_FILE' does not exist.  Exit." >&2
+ 		exit 1
+ 	fi
+-	CFG_LIST=$(sed -n "$SED_CONFIG_EXP" $MERGE_FILE)
++	CFG_LIST=$(gsed -n "$SED_CONFIG_EXP" $MERGE_FILE)
+ 
+ 	for CFG in $CFG_LIST ; do
+ 		grep -q -w $CFG $TMP_FILE || continue
+@@ -114,7 +114,7 @@ for MERGE_FILE in $MERGE_LIST ; do
+ 		elif [ "$WARNREDUN" = "true" ]; then
+ 			echo Value of $CFG is redundant by fragment $MERGE_FILE:
+ 		fi
+-		sed -i "/$CFG[ =]/d" $TMP_FILE
++		gsed -i "/$CFG[ =]/d" $TMP_FILE
+ 	done
+ 	cat $MERGE_FILE >> $TMP_FILE
+ done
+@@ -139,11 +139,11 @@ fi
+ # Use the merged file as the starting point for:
+ # alldefconfig: Fills in any missing symbols with Kconfig default
+ # allnoconfig: Fills in any missing symbols with # CONFIG_* is not set
+-make KCONFIG_ALLCONFIG=$TMP_FILE $OUTPUT_ARG $ALLTARGET
++gmake KCONFIG_ALLCONFIG=$TMP_FILE $OUTPUT_ARG $ALLTARGET
+ 
+ 
+ # Check all specified config values took (might have missed-dependency issues)
+-for CFG in $(sed -n "$SED_CONFIG_EXP" $TMP_FILE); do
++for CFG in $(gsed -n "$SED_CONFIG_EXP" $TMP_FILE); do
+ 
+ 	REQUESTED_VAL=$(grep -w -e "$CFG" $TMP_FILE)
+ 	ACTUAL_VAL=$(grep -w -e "$CFG" $OUTPUT/.config)
+diff -uNdrp scripts/Makefile.lib scripts/Makefile.lib
+--- scripts/Makefile.lib	2017-01-09 18:57:05.000000000 +0200
++++ scripts/Makefile.lib	2017-02-04 19:40:59.370986000 +0200
+@@ -311,7 +311,7 @@ quiet_cmd_dtc = DTC     $@
+ # Bring in any U-Boot-specific include after the '/dts-v1/;' header
+ cmd_dtc = mkdir -p $(dir ${dtc-tmp}) ; \
+ 	cat $< $(if $(u_boot_dtsi),\
+-		| sed '/^\/ {$$/{x;s%$$%\#include \"$(u_boot_dtsi)\"%;G;}') | \
++		| gsed '/^\/ {$$/{x;s%$$%\#include \"$(u_boot_dtsi)\"%;G;}') | \
+ 		$(CPP) $(dtc_cpp_flags) -x assembler-with-cpp -o $(dtc-tmp) - ; \
+ 	$(DTC) -O dtb -o $@ -b 0 \
+ 		-i $(dir $<) $(DTC_FLAGS) \
+diff -uNdrp tools/Makefile tools/Makefile
+--- tools/Makefile	2017-01-09 18:57:05.000000000 +0200
++++ tools/Makefile	2017-02-04 19:40:59.371556000 +0200
+@@ -5,6 +5,8 @@
+ # SPDX-License-Identifier:	GPL-2.0+
+ #
+ 
++swig=swig3.0
++
+ # Enable all the config-independent tools
+ ifneq ($(HOST_TOOLS_ALL),)
+ CONFIG_LCD_LOGO = y
+@@ -111,8 +113,8 @@ fit_check_sign-objs   := $(dumpimage-mki
+ 
+ # Build a libfdt Python module if swig is available
+ # Use 'sudo apt-get install swig libpython-dev' to enable this
+ hostprogs-y += \
+-	$(if $(shell which swig 2> /dev/null),_libfdt.so)
++	$(if $(shell which $(swig) 2> /dev/null),_libfdt.so)
+ _libfdt.so-sharedobjs += $(LIBFDT_OBJS)
+ libfdt:
+ 
+@@ -121,7 +123,7 @@ tools/_libfdt.so: $(patsubst %.o,%.c,$(L
+ 	mv _libfdt.so $@
+ 
+ tools/libfdt_wrap.c: $(srctree)/lib/libfdt/libfdt.swig
+-	swig -python -o $@ $<
++	$(swig) -python -o $@ $<
+ 
+ # TODO(sjg@chromium.org): Is this correct on Mac OS?
+ 

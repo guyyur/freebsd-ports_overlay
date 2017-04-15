@@ -1,5 +1,5 @@
-dtb-4.7|/usr/ports/local/dtb|/usr/local|Device Tree Blobs (DTBs)|/usr/ports/local/dtb/pkg-descr|ports@FreeBSD.org|sysutils||||||
+dtb-4.10|/usr/ports/local/dtb|/usr/local|Device Tree Blobs (DTBs)|/usr/ports/local/dtb/pkg-descr|ports@FreeBSD.org|sysutils||||||
 odroid-c1-boot-files-2016.03|/usr/ports/local/odroid-c1-boot-files|/usr/local|Boot files for Hardkernel ODROID C1|/usr/ports/local/odroid-c1-boot-files/pkg-descr|ports@FreeBSD.org|sysutils||||||
 raspberrypi-firmware-boot-1.20160620|/usr/ports/local/raspberrypi-firmware-boot|/usr/local|Boot files for Raspberry Pi|/usr/ports/local/raspberrypi-firmware-boot/pkg-descr|ports@FreeBSD.org|sysutils||||||
 sunxi-tools-20160606|/usr/ports/local/sunxi-tools|/usr/local|tools to help hacking Allwinner A10 devices|/usr/ports/local/sunxi-tools/pkg-descr|ports@FreeBSD.org|sysutils||||/usr/ports/devel/gmake||
-u-boot-2016.05|/usr/ports/local/u-boot|/usr/local|Cross-build U-Boot loader for multiple boards|/usr/ports/local/u-boot/pkg-descr|ports@FreeBSD.org|sysutils||||/usr/ports/devel/arm-none-eabi-gcc /usr/ports/devel/gmake||
+u-boot-2017.03|/usr/ports/local/u-boot|/usr/local|Cross-build das u-boot for multiple boards|/usr/ports/local/u-boot/pkg-descr|ports@FreeBSD.org|sysutils||||/usr/ports/devel/arm-none-eabi-gcc /usr/ports/devel/gmake /usr/ports/devel/swig30 /usr/ports/lang/python27 /usr/ports/sysutils/dtc /usr/ports/textproc/gsed||
