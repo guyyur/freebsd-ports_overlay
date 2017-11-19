@@ -85,7 +85,7 @@ my_list="
   net/dhcp6
   net/dhcpcd
   net/samba46
-  x11-wm/openbox
+  x11/slock
   "
 
 # --
@@ -102,7 +102,7 @@ case $1 in
     ;;
   compare)
     for i in $my_list; do
-      diff -Nudrp "$i" "$i.modified" | less -c
+      diff -Nudrp "$i.modified" "$i" | less -c
     done
     ;;
   *)

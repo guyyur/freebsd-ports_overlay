@@ -1,8 +1,9 @@
 # Created by: Roy Marples <roy@marples.name>
-# $FreeBSD: head/net/dhcpcd/Makefile 429517M $
+# $FreeBSD: head/net/dhcpcd/Makefile 453875M $
 
 PORTNAME=	dhcpcd
 PORTVERSION=	6.11.5
+PORTREVISION=	1
 CATEGORIES=	net
 MASTER_SITES=	http://roy.marples.name/downloads/dhcpcd/ \
 		ftp://roy.marples.name/pub/dhcpcd/\

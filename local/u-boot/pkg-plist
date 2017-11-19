@@ -1,6 +1,0 @@
-%%DATADIR%%/am335x_boneblack/MLO
-%%DATADIR%%/am335x_boneblack/u-boot.img
-%%DATADIR%%/Cubieboard/u-boot-sunxi-with-spl.bin
-%%DATADIR%%/orangepi_one/u-boot-sunxi-with-spl.bin
-%%DATADIR%%/orangepi_pc/u-boot-sunxi-with-spl.bin
-%%DATADIR%%/rpi/u-boot.bin

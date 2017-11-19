@@ -1,5 +1,5 @@
 PORTNAME=	dtb
-PORTVERSION=	4.10
+PORTVERSION=	4.14
 CATEGORIES=	sysutils
 PKGORIGIN=	local/${PORTDIRNAME}    # workaround for no local category
 MASTER_SITES=	https://cdn.kernel.org/pub/linux/kernel/v4.x/
@@ -16,9 +16,8 @@ BUILD_DEPENDS=	${LOCALBASE}/bin/dtc:sysutils/dtc
 ARCHS=		arm
 
 DTS_FILES.arm=	am335x-boneblack.dts \
-		bcm2835-rpi-b.dts \
-		meson8b-odroidc1.dts \
 		sun4i-a10-cubieboard.dts \
+		sun8i-h3-nanopi-neo.dts \
 		sun8i-h3-orangepi-one.dts \
 		sun8i-h3-orangepi-pc.dts
 
@@ -37,7 +36,7 @@ do-build:
 .for ARCH in ${ARCHS}
 .for DTS_FILE in ${DTS_FILES.${ARCH}}
 	cpp -P -x assembler-with-cpp -I ${WRKSRC}/arch/${ARCH}/boot/dts -I ${WRKSRC}/include ${WRKSRC}/arch/${ARCH}/boot/dts/${DTS_FILE} | \
-	    ${LOCALBASE}/bin/dtc -O dtb -o ${WRKSRC}/arch/${ARCH}/boot/dts/${DTS_FILE:S/.dts/.dtb/} -b 0 -p 1024 -i ${WRKSRC}/arch/${ARCH}/boot/dts -i ${WRKSRC}/include
+	    /usr/local/bin/dtc -O dtb -o ${WRKSRC}/arch/${ARCH}/boot/dts/${DTS_FILE:S/.dts/.dtb/} -b 0 -p 1024 -i ${WRKSRC}/arch/${ARCH}/boot/dts -i ${WRKSRC}/include
 .endfor
 .endfor
 

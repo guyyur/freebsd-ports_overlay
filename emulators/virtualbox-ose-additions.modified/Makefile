@@ -1,8 +1,9 @@
 # Created by: Bernhard Froehlich <decke@bluelife.at>
-# $FreeBSD: head/emulators/virtualbox-ose-additions/Makefile 436259M $
+# $FreeBSD: head/emulators/virtualbox-ose-additions/Makefile 454388M $
 
 PORTNAME=	virtualbox-ose
-PORTVERSION=	5.1.18
+PORTVERSION=	5.2.0
+PORTREVISION=	1
 CATEGORIES=	emulators
 MASTER_SITES=	http://download.virtualbox.org/virtualbox/${PORTVERSION}/
 PKGNAMESUFFIX?=	-additions
@@ -15,7 +16,8 @@ LICENSE=	GPLv2
 LICENSE_FILE=	${WRKSRC}/COPYING
 
 BUILD_DEPENDS=	yasm:devel/yasm \
-		kmk:devel/kBuild
+		kmk:devel/kBuild \
+		xsltproc:textproc/libxslt
 
 CPE_VENDOR=	oracle
 CPE_PRODUCT=	vm_virtualbox
@@ -23,7 +25,7 @@ CPE_PRODUCT=	vm_virtualbox
 PATCHDIR=	${.CURDIR}/../${PORTNAME}/files
 WRKSRC=		${WRKDIR}/VirtualBox-${PORTVERSION}
 USE_RC_SUBR=	vboxguest vboxservice
-USES=		compiler:features cpe iconv kmod python:build tar:bzip2
+USES=		compiler:c++11-lang cpe iconv kmod python:build tar:bzip2
 ONLY_FOR_ARCHS=	i386 amd64
 MAKE_JOBS_UNSAFE=	yes
 
@@ -69,7 +71,8 @@ INPUTDIR=	${PREFIX}/lib/xorg/modules/input
 
 VBOX_BIN=	${WRKSRC}/out/${KMK_ARCH}/${KMK_BUILDTYPE}/bin/additions
 VBOX_SBINS=	VBoxControl \
-		VBoxService
+		VBoxService \
+		mount_vboxvfs
 
 BUILD_WRKSRC=	${VBOX_BIN}/src
 
@@ -132,15 +135,11 @@ post-patch:
 	    ${WRKSRC}/LocalConfig.kmk
 	@${ECHO} 'VBOX_WITH_X11_ADDITIONS = ${VBOX_WITH_X11}' >> \
 	    ${WRKSRC}/LocalConfig.kmk
+	@${ECHO} 'VBOX_GCC_std = -std=c++11' >> ${WRKSRC}/LocalConfig.kmk
 .if ${COMPILER_TYPE} == clang
 	@${REINPLACE_CMD} -e 's| -finline-limit=8000||' \
 	    -e 's| -fno-merge-constants||' \
 	    -e 's| -mpreferred-stack-boundary=2||' ${WRKSRC}/Config.kmk
-.if ${COMPILER_FEATURES:Mlibc++}
-	@${ECHO} 'VBOX_GCC_std = -std=c++11' >> ${WRKSRC}/LocalConfig.kmk
-.endif
-	@${ECHO} 'VBOX_GCC_Wno-unused-parameter = -Wno-unused-parameter' >> \
-	    ${WRKSRC}/LocalConfig.kmk
 .endif
 	@${REINPLACE_CMD} -e 's|/usr/local|${LOCALBASE}|g' \
 	    ${WRKSRC}/Config.kmk ${WRKSRC}/configure \
@@ -167,47 +166,41 @@ do-install:
 	${MKDIR} ${STAGEDIR}${KMODDIR}
 	${INSTALL_KLD} ${VBOX_BIN}/src/vboxguest/vboxguest.ko \
 	    ${STAGEDIR}${KMODDIR}
-.if ${PORT_OPTIONS:MDEBUG}
-	${INSTALL_KLD} ${VBOX_BIN}/src/vboxguest/vboxguest.ko.symbols \
-	    ${STAGEDIR}${KMODDIR}
-.endif
-
+	${INSTALL_KLD} ${VBOX_BIN}/vboxvfs.ko ${STAGEDIR}${KMODDIR}
 	${INSTALL_LIB} ${VBOX_BIN}/pam_vbox.so ${STAGEDIR}${PREFIX}/lib
 	${INSTALL_PROGRAM} ${VBOX_SBINS:S|^|${VBOX_BIN}/|} \
 	    ${STAGEDIR}${PREFIX}/sbin/
 
-.if ${PORT_OPTIONS:MX11}
+do-install-DEBUG-on:
+	${INSTALL_KLD} ${VBOX_BIN}/src/vboxguest/vboxguest.ko.symbols \
+	    ${STAGEDIR}${KMODDIR}
+
+do-install-X11-on:
 	${INSTALL_PROGRAM} ${VBOX_BIN}/VBoxClient ${STAGEDIR}${PREFIX}/bin/
 	${INSTALL_SCRIPT} \
 	    ${WRKSRC}/src/VBox/Additions/x11/Installer/98vboxadd-xclient \
 	    ${STAGEDIR}${PREFIX}/bin/VBoxClient-all
-
 	# X11 autostart
 	${MKDIR} ${STAGEDIR}${PREFIX}/etc/xdg/autostart/
 	${INSTALL_DATA} \
 	    ${WRKSRC}/src/VBox/Additions/x11/Installer/vboxclient.desktop \
 	    ${STAGEDIR}${PREFIX}/etc/xdg/autostart/
-
 	# KDE autostart
 	${MKDIR} ${STAGEDIR}${PREFIX}/share/autostart/
 	${INSTALL_DATA} \
 	    ${WRKSRC}/src/VBox/Additions/x11/Installer/vboxclient.desktop \
 	    ${STAGEDIR}${PREFIX}/share/autostart/
-
 	${MKDIR} ${STAGEDIR}${VIDEODIR}
 	${INSTALL_DATA} ${VBOX_BIN}/vboxvideo_drv_$$(${XORG_DRV_ABI}).so \
 	    ${STAGEDIR}${VIDEODIR}/vboxvideo_drv.so
-
 	${MKDIR} ${STAGEDIR}${INPUTDIR}
 	${INSTALL_DATA} ${VBOX_BIN}/vboxmouse_drv_$$(${XORG_DRV_ABI}).so \
 	    ${STAGEDIR}${INPUTDIR}/vboxmouse_drv.so
-.endif
 
-.if ${PORT_OPTIONS:MOPENGL}
+do-install-OPENGL-on:
 	${INSTALL_DATA} ${FILESDIR}/vboxvideo.conf \
 	    ${STAGEDIR}${PREFIX}/etc/libmap.d/
 	${INSTALL_DATA} ${VBOX_LIBS:S|^|${VBOX_BIN}/|} \
 	    ${STAGEDIR}${PREFIX}/lib/
-.endif
 
 .include <bsd.port.post.mk>
