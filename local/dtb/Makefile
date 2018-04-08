@@ -1,9 +1,10 @@
 PORTNAME=	dtb
-PORTVERSION=	4.14
+PORTVERSION=	4.15
 CATEGORIES=	sysutils
 PKGORIGIN=	local/${PORTDIRNAME}    # workaround for no local category
 MASTER_SITES=	https://cdn.kernel.org/pub/linux/kernel/v4.x/
-DISTNAME=	linux-${PORTVERSION}
+# DISTNAME=	linux-${PORTVERSION}
+DISTNAME=	linux-${PORTVERSION}-rc7
 
 MAINTAINER=	ports@FreeBSD.org
 COMMENT?=	Device Tree Blobs (DTBs)

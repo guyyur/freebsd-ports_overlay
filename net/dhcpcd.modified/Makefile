@@ -2,8 +2,7 @@
 # $FreeBSD: head/net/dhcpcd/Makefile 453875M $
 
 PORTNAME=	dhcpcd
-PORTVERSION=	6.11.5
-PORTREVISION=	1
+PORTVERSION=	7.0.3
 CATEGORIES=	net
 MASTER_SITES=	http://roy.marples.name/downloads/dhcpcd/ \
 		ftp://roy.marples.name/pub/dhcpcd/\
@@ -19,7 +18,7 @@ LICENSE=	BSD2CLAUSE
 USES=		cpe tar:xz
 CPE_VENDOR=	dhcpcd_project
 GNU_CONFIGURE=	yes
-CONFIGURE_ARGS=	--datadir=${PREFIX}/share/examples --dbdir=/var/cache
+CONFIGURE_ARGS=	--datadir=${PREFIX}/share/examples
 USE_RC_SUBR=	dhcpcd
 
 PLIST_SUB+=	YPBIND="@comment "

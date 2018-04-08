@@ -81,10 +81,18 @@ my_restore()
 
 # --
 my_list="
+  deskutils/parcellite
+  devel/autoconf
+  devel/binutils
+  editors/nano
+  emulators/qemu-sbruno
   emulators/virtualbox-ose-additions
+  multimedia/ffmpeg
+  multimedia/libvpx
   net/dhcp6
   net/dhcpcd
-  net/samba46
+  net/samba48
+  security/gnutls
   x11/slock
   "
 
