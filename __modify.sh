@@ -88,7 +88,6 @@ my_list="
   emulators/qemu-sbruno
   emulators/virtualbox-ose-additions
   multimedia/ffmpeg
-  multimedia/libvpx
   net/dhcp6
   net/dhcpcd
   net/samba48
