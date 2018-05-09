@@ -81,7 +81,6 @@ my_restore()
 
 # --
 my_list="
-  deskutils/parcellite
   devel/autoconf
   devel/binutils
   editors/nano
