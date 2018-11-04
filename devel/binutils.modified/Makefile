@@ -1,9 +1,9 @@
 # Created by: Martin Matuska <mm@FreeBSD.org>
-# $FreeBSD: head/devel/binutils/Makefile 462842M $
+# $FreeBSD: head/devel/binutils/Makefile 477638M $
 
 PORTNAME=	binutils
 PORTVERSION=	2.30
-PORTREVISION=	2
+PORTREVISION=	5
 PORTEPOCH?=	1
 CATEGORIES?=	devel
 MASTER_SITES=	SOURCEWARE/binutils/releases
@@ -123,6 +123,7 @@ post-install:
 .if ${PKGNAMEPREFIX:S/-$//} != ${BUTARGET}
 	${RM} -r ${STAGEDIR}${PREFIX}/${PKGNAMEPREFIX:S/-$//}
 .endif
+	${RM} ${STAGEDIR}${PREFIX}/${BUTARGET}/lib/ldscripts/i386bsd.*
 	@if [ -d ${STAGEDIR}${PREFIX}/${INFO_PATH} ] ; then rm -rf ${STAGEDIR}${PREFIX}/${INFO_PATH}; fi
 	${LN} -fs ../../bin/${BUTARGET}-size ${STAGEDIR}${PREFIX}/${BUTARGET}/bin/size
 .if defined(CROSS_TOOLCHAIN)
@@ -148,11 +149,15 @@ post-install:
 	${MV} ${STAGEDIR}/${MANDIR}1/objdump.1 ${STAGEDIR}/${MANDIR}1/${BUTARGET}-objdump.1
 	${GZIP_CMD} ${STAGEDIR}/${MANDIR}1/${BUTARGET}-objdump.1
 	${LN} -fs ${BUTARGET}-objdump.1.gz ${STAGEDIR}/${MANDIR}1/objdump.1.gz
+	@${RM} -r ${STAGEDIR}${PREFIX}/include
+	@${RM} -r ${STAGEDIR}${PREFIX}/lib
 .endif
 .endif
 .for tool in ${BUREMOVE}
 	@${RM} ${STAGEDIR}${PREFIX}/bin/${BUTARGET}-${tool} \
-	    ${STAGEDIR}${PREFIX}/man/man1/${BUTARGET}-${tool}.1 \
+	    ${STAGEDIR}${PREFIX}/bin/${tool} \
+	    ${STAGEDIR}${MANPREFIX}/man/man1/${BUTARGET}-${tool}.1 \
+	    ${STAGEDIR}${MANPREFIX}/man/man1/${tool}.1 \
 	    ${STAGEDIR}${PREFIX}/${BUTARGET}/bin/${tool}
 .endfor
 .if defined(BUREMOVE) && ${BUREMOVE:Mld}

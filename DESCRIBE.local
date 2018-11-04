@@ -1,2 +1,2 @@
-dtb-4.15|/usr/ports/local/dtb|/usr/local|Device Tree Blobs (DTBs)|/usr/ports/local/dtb/pkg-descr|ports@FreeBSD.org|sysutils||||||
-u-boot-orangepi-pc-2018.03|/usr/ports/local/u-boot-orangepi-pc|/usr/local|Cross-build das u-boot for orangepi-pc|/usr/ports/local/u-boot-orangepi-pc/pkg-descr|imp@FreeBSD.org|sysutils||||/usr/ports/devel/arm-none-eabi-gcc /usr/ports/devel/gmake /usr/ports/devel/swig30 /usr/ports/lang/python27 /usr/ports/sysutils/dtc /usr/ports/textproc/gsed /usr/ports/sysutils/u-boot-tools||
+dtb-4.18|/usr/ports/local/dtb|/usr/local|Device Tree Blobs (DTBs)|/usr/ports/local/dtb/pkg-descr|ports@FreeBSD.org|sysutils||||||
+sunxi-tools-spi-1.4.2.32d8535|/usr/ports/local/sunxi-tools-spi|/usr/local|Tools to help hacking Allwinner devices (with SPI patches)|/usr/ports/local/sunxi-tools-spi/pkg-descr|guy|comms||||/usr/ports/devel/gmake /usr/ports/devel/pkgconf||https://github.com/ssvb/sunxi-tools

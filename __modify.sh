@@ -81,13 +81,14 @@ my_restore()
 
 # --
 my_list="
+  comms/sunxi-tools
+  devel/arm-none-eabi-gcc
   devel/autoconf
   devel/binutils
   editors/nano
+  emulators/qemu
   emulators/qemu-sbruno
-  emulators/virtualbox-ose-additions
   multimedia/ffmpeg
-  net/dhcp6
   net/dhcpcd
   net/samba48
   security/gnutls

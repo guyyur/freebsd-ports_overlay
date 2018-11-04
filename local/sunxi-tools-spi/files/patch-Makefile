@@ -1,0 +1,51 @@
+diff --git a/Makefile b/Makefile
+index 42cd932..1c6bfdd 100644
+--- Makefile
++++ Makefile
+@@ -33,7 +33,7 @@ DEFINES += -D_NETBSD_SOURCE
+ endif
+ 
+ # Tools useful on host and target
+-TOOLS = sunxi-fexc sunxi-bootinfo sunxi-fel sunxi-nand-part
++TOOLS = sunxi-fel-spi
+ 
+ # Symlinks to sunxi-fexc
+ FEXC_LINKS = bin2fex fex2bin
+@@ -56,24 +56,21 @@ BINDIR  ?= $(PREFIX)/bin
+ 
+ .PHONY: all clean tools target-tools install install-tools install-target-tools
+ 
+-all: tools target-tools
++all: tools
+ 
+-tools: $(TOOLS) $(FEXC_LINKS)
++tools: $(TOOLS)
+ target-tools: $(TARGET_TOOLS)
+ 
+ misc: $(MISC_TOOLS)
+ 
+ binfiles: $(BINFILES)
+ 
+-install: install-tools install-target-tools
++install: install-tools
+ 
+ install-tools: $(TOOLS)
+ 	install -d $(DESTDIR)$(BINDIR)
+ 	@set -ex ; for t in $^ ; do \
+-		install -m0755 $$t $(DESTDIR)$(BINDIR)/$$t ; \
+-	done
+-	@set -ex ; for l in $(FEXC_LINKS) ; do \
+-		ln -nfs sunxi-fexc $(DESTDIR)$(BINDIR)/$$l ; \
++		$(BSD_INSTALL_PROGRAM) -m0755 $$t $(DESTDIR)$(BINDIR)/$$t ; \
+ 	done
+ 
+ install-target-tools: $(TARGET_TOOLS)
+@@ -101,7 +98,7 @@ LIBUSB = libusb-1.0
+ LIBUSB_CFLAGS = `pkg-config --cflags $(LIBUSB)`
+ LIBUSB_LIBS = `pkg-config --libs $(LIBUSB)`
+ 
+-sunxi-fel: fel.c fel.h fel-to-spl-thunk.h progress.c progress.h \
++sunxi-fel-spi: fel.c fel.h fel-to-spl-thunk.h progress.c progress.h \
+ 					fel-spiflash.c fel-spiflash.h fel-remotefunc-spi-data-transfer.h
+ 	$(CC) $(CFLAGS) $(LIBUSB_CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) $(LIBS) $(LIBUSB_LIBS)
+ 

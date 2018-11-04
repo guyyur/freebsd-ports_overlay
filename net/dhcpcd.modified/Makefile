@@ -2,7 +2,7 @@
 # $FreeBSD: head/net/dhcpcd/Makefile 453875M $
 
 PORTNAME=	dhcpcd
-PORTVERSION=	7.0.3
+PORTVERSION=	7.0.8
 CATEGORIES=	net
 MASTER_SITES=	http://roy.marples.name/downloads/dhcpcd/ \
 		ftp://roy.marples.name/pub/dhcpcd/\

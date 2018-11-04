@@ -1,8 +1,8 @@
 # Created by: Philippe Lefebvre <nemesis@balistik.net>
-# $FreeBSD: head/editors/nano/Makefile 465970M $
+# $FreeBSD: head/editors/nano/Makefile 480818M $
 
 PORTNAME=	nano
-PORTVERSION=	2.9.5
+PORTVERSION=	3.1
 CATEGORIES=	editors
 MASTER_SITES=	http://www.nano-editor.org/dist/v${PORTVERSION:R}/ GNU
 
@@ -11,15 +11,16 @@ COMMENT=	Nano's ANOther editor, an enhanced free Pico clone
 
 LICENSE=	GPLv3
 
+USES=		charsetfix ncurses
+
 CONFLICTS=	nano-devel-2*
 
-USES=		charsetfix ncurses
 GNU_CONFIGURE=	yes
 
 CONFIGURE_ARGS=	--docdir=${DOCSDIR} --enable-utf8
 .ifdef QEMU_EMULATING
 # XXX bug 224740: configure hangs
-CONFIGURE_ENV+= gl_cv_func_printf_enomem=no
+CONFIGURE_ENV+=	gl_cv_func_printf_enomem=no
 .endif
 MAKE_ARGS+=	install_htmlmanDATA=install-htmlmanDATA
 CPPFLAGS+=	-I${LOCALBASE}/include
