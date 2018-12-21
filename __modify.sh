@@ -85,7 +85,6 @@ my_list="
   devel/arm-none-eabi-gcc
   devel/autoconf
   devel/binutils
-  editors/nano
   emulators/qemu
   emulators/qemu-sbruno
   multimedia/ffmpeg

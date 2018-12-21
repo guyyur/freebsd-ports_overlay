@@ -1,15 +1,27 @@
-https://git.ffmpeg.org/gitweb/ffmpeg.git/commitdiff/b69ea742ab23
+https://git.ffmpeg.org/gitweb/ffmpeg.git/commitdiff/aaf917157479
 
---- libavcodec/libaomenc.c.orig	2018-07-18 13:52:00 UTC
+--- libavcodec/libaomenc.c.orig	2018-11-05 23:22:26 UTC
 +++ libavcodec/libaomenc.c
-@@ -697,10 +697,6 @@ static const AVOption options[] = {
-                          "alternate reference frame selection",    OFFSET(lag_in_frames),   AV_OPT_TYPE_INT, {.i64 = -1},      -1,      INT_MAX, VE},
-     { "error-resilience", "Error resilience configuration", OFFSET(error_resilient), AV_OPT_TYPE_FLAGS, {.i64 = 0}, INT_MIN, INT_MAX, VE, "er"},
-     { "default",         "Improve resiliency against losses of whole frames", 0, AV_OPT_TYPE_CONST, {.i64 = AOM_ERROR_RESILIENT_DEFAULT}, 0, 0, VE, "er"},
--    { "partitions",      "The frame partitions are independently decodable "
--                         "by the bool decoder, meaning that partitions can be decoded even "
--                         "though earlier partitions have been lost. Note that intra predicition"
--                         " is still done over the partition boundary.",       0, AV_OPT_TYPE_CONST, {.i64 = AOM_ERROR_RESILIENT_PARTITIONS}, 0, 0, VE, "er"},
-     { "crf",              "Select the quality for constant quality mode", offsetof(AOMContext, crf), AV_OPT_TYPE_INT, {.i64 = -1}, -1, 63, VE },
-     { "static-thresh",    "A change threshold on blocks below which they will be skipped by the encoder", OFFSET(static_thresh), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, VE },
-     { "drop-threshold",   "Frame drop threshold", offsetof(AOMContext, drop_threshold), AV_OPT_TYPE_INT, {.i64 = 0 }, INT_MIN, INT_MAX, VE },
+@@ -192,7 +192,12 @@ static av_cold void free_frame_list(struct FrameListDa
+ }
+ 
+ static av_cold int codecctl_int(AVCodecContext *avctx,
+-                                enum aome_enc_control_id id, int val)
++#ifdef UENUM1BYTE
++                                aome_enc_control_id id,
++#else
++                                enum aome_enc_control_id id,
++#endif
++                                int val)
+ {
+     AOMContext *ctx = avctx->priv_data;
+     char buf[80];
+@@ -288,7 +293,7 @@ static int set_pix_fmt(AVCodecContext *avctx, aom_code
+ 
+ static void set_color_range(AVCodecContext *avctx)
+ {
+-    enum aom_color_range aom_cr;
++    aom_color_range_t aom_cr;
+     switch (avctx->color_range) {
+     case AVCOL_RANGE_UNSPECIFIED:
+     case AVCOL_RANGE_MPEG:       aom_cr = AOM_CR_STUDIO_RANGE; break;

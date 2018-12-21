@@ -1,9 +1,9 @@
 # Created by: ade@FreeBSD.org
-# $FreeBSD: head/devel/autoconf/Makefile 452613M $
+# $FreeBSD: head/devel/autoconf/Makefile 484628M $
 
 PORTNAME=	autoconf
 PORTVERSION=	2.69
-PORTREVISION=	1
+PORTREVISION=	2
 CATEGORIES=	devel
 MASTER_SITES=	GNU
 
