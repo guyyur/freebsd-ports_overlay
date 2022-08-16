@@ -1,0 +1,8 @@
+bin/gmrun
+@sample etc/gmrunrc.sample
+man/man1/gmrun.1.gz
+share/applications/gmrun.desktop
+%%NLS%%share/locale/es/LC_MESSAGES/gmrun.mo
+%%NLS%%share/locale/fr/LC_MESSAGES/gmrun.mo
+%%NLS%%share/locale/he/LC_MESSAGES/gmrun.mo
+share/pixmaps/gmrun.png

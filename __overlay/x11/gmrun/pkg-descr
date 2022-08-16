@@ -1,0 +1,11 @@
+A run utiliy featuring a slim design and bash style auto-completion. Its features include:
+
+	* Tilde completion
+	* Completion works for separate words
+	* Cycleable command history
+	* Configuration file in ${PREFIX}/share/gmrun/gmrunrc,
+	  which can be copied to ~/.gmrunrc
+	* Can spawn commands in a terminal
+	* Intelligent URL handling
+
+WWW: https://github.com/WdesktopX/gmrun

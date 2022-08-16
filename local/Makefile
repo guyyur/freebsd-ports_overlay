@@ -1,7 +1,7 @@
 
     COMMENT = Local Ports
 
-    SUBDIR += dtb
-    SUBDIR += sunxi-tools-spi
+    SUBDIR += juexec
+    SUBDIR += sbl-hebrew
 
 .include <bsd.port.subdir.mk>

@@ -1,2 +1,0 @@
-dtb-4.18|/usr/ports/local/dtb|/usr/local|Device Tree Blobs (DTBs)|/usr/ports/local/dtb/pkg-descr|ports@FreeBSD.org|sysutils||||||
-sunxi-tools-spi-1.4.2.32d8535|/usr/ports/local/sunxi-tools-spi|/usr/local|Tools to help hacking Allwinner devices (with SPI patches)|/usr/ports/local/sunxi-tools-spi/pkg-descr|guy|comms||||/usr/ports/devel/gmake /usr/ports/devel/pkgconf||https://github.com/ssvb/sunxi-tools
